@@ -43,10 +43,10 @@ class Item:
 
     @name.setter
     def name(self, name):
-        if len(self.__name) <= 10:
+        if len(name) <= 10:
             self.__name = name
         else:
-            print('Exception: Длина наименования товара превышает 10 символов')
+            raise Exception("Длина наименования товара превышает 10 символов")
 
     @staticmethod
     def string_to_number(number):
