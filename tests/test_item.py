@@ -1,10 +1,16 @@
 import pytest
 from src.item import Item
+from src.phone import Phone
 
 
 @pytest.fixture
 def example():
     return Item("Смартфон", 10000, 20)
+
+
+@pytest.fixture
+def example_1():
+    return Phone("iPhone 14", 120_000, 5, 2)
 
 
 def test_calculate_total_price(example):
@@ -37,3 +43,9 @@ def test_repr(example):
 
 def test_str(example):
     assert str(example) == 'Смартфон'
+
+
+# Тесты к HW_4
+def test_add(example, example_1):
+    assert example + example_1 == 25
+    assert example_1 + example_1 == 10
