@@ -3,9 +3,11 @@ from src.item import Item
 from src.phone import Phone
 
 
-class NewClass(Item):
+class NewClass:
     def __init__(self, name, price, quantity):
-        super().__init__(name, price, quantity)
+        self.__name = name
+        self.price = price
+        self.quantity = quantity
 
 
 @pytest.fixture
@@ -61,6 +63,6 @@ def test_add(example, example_1, example_2):
     assert example_1 + example_1 == 10
 
     classes = (Item, Phone)
-    if not isinstance(example_1, classes) or not isinstance(example, classes):
+    if not isinstance(example_2, classes):
         with pytest.raises(Exception):
             example_1 + example_2
