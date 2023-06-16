@@ -3,6 +3,16 @@ from src.item import Item
 from src.phone import Phone
 
 
+class NewClass(Item):
+    def __init__(self, name, price, quantity):
+        super().__init__(name, price, quantity)
+
+
+@pytest.fixture
+def example_2():
+    return NewClass("Смартфон", 10000, 20)
+
+
 @pytest.fixture
 def example():
     return Item("Смартфон", 10000, 20)
@@ -46,6 +56,11 @@ def test_str(example):
 
 
 # Тесты к HW_4
-def test_add(example, example_1):
+def test_add(example, example_1, example_2):
     assert example + example_1 == 25
     assert example_1 + example_1 == 10
+
+    classes = (Item, Phone)
+    if not isinstance(example_1, classes) or not isinstance(example, classes):
+        with pytest.raises(Exception):
+            example_1 + example_2
