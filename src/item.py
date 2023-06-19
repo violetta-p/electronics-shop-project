@@ -6,10 +6,22 @@ from pathlib import Path
 FILE_PATH = Path(__file__).parent.parent
 
 
+class InstantiateCSVError(Exception):
+    def __init__(self, *args):
+        if len(args) > 0:
+            self.message = args[0]
+        else:
+            self.message = 'csv-файл поврежден'
+
+    def __str__(self):
+        return self.message
+
+
 class Item(ABC):
     """
     Класс для представления товара в магазине.
     """
+    csv_file_name = 'items.csv'
     pay_rate = 1.0
     all = []
 
@@ -27,7 +39,8 @@ class Item(ABC):
         super().__init__()
 
     def __repr__(self):
-        return f"{self.__class__.__name__}('{self.name}', {self.price}, {self.quantity})"
+        return f"{self.__class__.__name__}" \
+               f"('{self.name}', {self.price}, {self.quantity})"
 
     def __str__(self):
         return f"{self.name}"
@@ -73,11 +86,18 @@ class Item(ABC):
 
     @classmethod
     def instantiate_from_csv(cls):
-        full_path_to_data = os.path.join(FILE_PATH, "items.csv")
-        with open(full_path_to_data, newline='') as csvfile:
-            reader = csv.DictReader(csvfile)
-            for item in reader:
-                name = item["name"]
-                price = cls.string_to_number(item["price"])
-                quantity = cls.string_to_number(item["quantity"])
-                Item.all.append(cls(name, price, quantity))
+        full_path_to_data = os.path.join(FILE_PATH, cls.csv_file_name)
+        try:
+            with open(full_path_to_data, newline='') as csvfile:
+                reader = csv.DictReader(csvfile)
+                for item in reader:
+                    if item["name"] and item["price"] and item["quantity"]:
+                        name = item["name"]
+                        price = cls.string_to_number(item["price"])
+                        quantity = cls.string_to_number(item["quantity"])
+                        Item.all.append(cls(name, price, quantity))
+                    else:
+                        error_info = InstantiateCSVError()
+                        return error_info
+        except FileNotFoundError:
+            return f'{"Отсутствует файл item.csv"}'
