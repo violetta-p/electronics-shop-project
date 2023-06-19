@@ -1,6 +1,10 @@
 import pytest
-from src.item import Item
+from src.item import Item, InstantiateCSVError
 from src.phone import Phone
+
+NORMAL_FILE = "items.csv"
+NON_EXISTENT_FILE = "item1.csv"
+DAMAGED_FILE = "item.csv"
 
 
 class NewClass:
@@ -48,7 +52,6 @@ def test_string_to_number():
     assert Item.string_to_number('5.5') == 5.5
 
 
-# Тесты к HW_3
 def test_repr(example):
     assert repr(example) == "Item('Смартфон', 10000, 20)"
 
@@ -57,7 +60,6 @@ def test_str(example):
     assert str(example) == 'Смартфон'
 
 
-# Тесты к HW_4
 def test_add(example, example_1, example_2):
     assert example + example_1 == 25
     assert example_1 + example_1 == 10
@@ -66,3 +68,12 @@ def test_add(example, example_1, example_2):
     if not isinstance(example_2, classes):
         with pytest.raises(Exception):
             example_1 + example_2
+
+
+def test_exceptions():
+    Item.csv_file_name = NON_EXISTENT_FILE
+    assert Item.instantiate_from_csv() == 'Отсутствует файл item.csv'
+    Item.csv_file_name = DAMAGED_FILE
+    exc_info = Item.instantiate_from_csv()
+    assert 'csv-файл поврежден' == str(exc_info)
+    assert type(exc_info) == InstantiateCSVError
