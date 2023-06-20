@@ -1,9 +1,9 @@
 import csv
 import os
-from abc import ABC
 from pathlib import Path
 
-FILE_PATH = Path(__file__).parent.parent
+FILE_PATH = Path(__file__).parent
+# FILE_PATH = ".."+os.sep+"src"
 
 
 class InstantiateCSVError(Exception):
@@ -17,7 +17,7 @@ class InstantiateCSVError(Exception):
         return self.message
 
 
-class Item(ABC):
+class Item:
     """
     Класс для представления товара в магазине.
     """
@@ -91,13 +91,17 @@ class Item(ABC):
             with open(full_path_to_data, newline='') as csvfile:
                 reader = csv.DictReader(csvfile)
                 for item in reader:
-                    if item["name"] and item["price"] and item["quantity"]:
+                    try:
                         name = item["name"]
                         price = cls.string_to_number(item["price"])
                         quantity = cls.string_to_number(item["quantity"])
                         Item.all.append(cls(name, price, quantity))
+                    except KeyError:
+                        raise InstantiateCSVError()
+                    except ValueError:
+                        raise InstantiateCSVError()
                     else:
-                        error_info = InstantiateCSVError()
-                        return error_info
+                        if not (item["name"] and item["price"] and item["quantity"]):
+                            raise InstantiateCSVError('В файле пропущены данные')
         except FileNotFoundError:
-            return f'{"Отсутствует файл item.csv"}'
+            raise FileNotFoundError("Отсутствует csv-файл")

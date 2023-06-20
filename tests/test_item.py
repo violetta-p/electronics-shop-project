@@ -4,7 +4,9 @@ from src.phone import Phone
 
 NORMAL_FILE = "items.csv"
 NON_EXISTENT_FILE = "item1.csv"
-DAMAGED_FILE = "item.csv"
+KEY_ERROR_FILE = "item(key_er).csv"
+VALUE_ERROR_FILE = "item(val_er).csv"
+MISSING_DATA_FILE = "item(missing).csv"
 
 
 class NewClass:
@@ -72,8 +74,17 @@ def test_add(example, example_1, example_2):
 
 def test_exceptions():
     Item.csv_file_name = NON_EXISTENT_FILE
-    assert Item.instantiate_from_csv() == 'Отсутствует файл item.csv'
-    Item.csv_file_name = DAMAGED_FILE
-    exc_info = Item.instantiate_from_csv()
-    assert 'csv-файл поврежден' == str(exc_info)
-    assert type(exc_info) == InstantiateCSVError
+    with pytest.raises(FileNotFoundError):
+        Item.instantiate_from_csv()
+
+    Item.csv_file_name = KEY_ERROR_FILE
+    with pytest.raises(InstantiateCSVError):
+        Item.instantiate_from_csv()
+
+    Item.csv_file_name = VALUE_ERROR_FILE
+    with pytest.raises(InstantiateCSVError):
+        Item.instantiate_from_csv()
+
+    Item.csv_file_name = MISSING_DATA_FILE
+    with pytest.raises(InstantiateCSVError):
+        Item.instantiate_from_csv()
